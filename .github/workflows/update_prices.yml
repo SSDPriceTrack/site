@@ -2,13 +2,13 @@ name: Update SSD Prices
 
 on:
   schedule:
-    - cron: '0 */6 * * *'
-  workflow_dispatch:
+    - cron: '0 */6 * * *'  # Runs every 6 hours
+  workflow_dispatch:       # Allows manual triggering
 
 jobs:
   update-prices:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-          architecture: 'x64'  # Explicit architecture
+          architecture: 'x64'
 
       - name: Create and use virtual environment
         run: |
@@ -25,14 +25,14 @@ jobs:
           source venv/bin/activate
           pip install --upgrade pip
           pip install python-amazon-paapi requests
-          pip list  # Verify installation
+          pip list  # For debugging purposes – can be removed later
 
       - name: Verify package installation
         run: |
           source venv/bin/activate
           python -c "import python_amazon_paapi; print(f'Package version: {python_amazon_paapi.__version__}')"
 
-      - name: Run price fetcher
+      - name: Run price fetcher script
         env:
           AMAZON_ACCESS_KEY: ${{ secrets.AMAZON_ACCESS_KEY }}
           AMAZON_SECRET_KEY: ${{ secrets.AMAZON_SECRET_KEY }}
@@ -40,7 +40,7 @@ jobs:
           source venv/bin/activate
           python fetcher.py
 
-      - name: Commit changes
+      - name: Commit changes to JSON file
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Automated: Updated SSD prices"
