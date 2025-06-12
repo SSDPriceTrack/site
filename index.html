@@ -1,50 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SSD Price Comparator</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SSD Prices</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <header>
-        <h1>SSD Price Comparator</h1>
-        <nav class="locale-nav">
-            <a href="/?locale=us">US</a> |
-            <a href="/?locale=uk">UK</a> |
-            <a href="/?locale=de">DE</a> |
-            <a href="/?locale=ca">CA</a> |
-            <a href="/?locale=fr">FR</a> |
-            <a href="/?locale=es">ES</a> |
-            <a href="/?locale=it">IT</a> |
-            <a href="/?locale=nl">NL</a> |
-            <a href="/?locale=pl">PL</a> |
-            <a href="/?locale=se">SE</a>
-        </nav>
-    </header>
+  <header>
+    <h1>SSD Prices</h1>
+    <div class="locale-selector">
+      <strong>Select Region:</strong>
+      <a href="?locale=US">US</a> |
+      <a href="?locale=CA">CA</a> |
+      <a href="?locale=UK">UK</a> |
+      <a href="?locale=DE">DE</a> |
+      <a href="?locale=FR">FR</a> |
+      <a href="?locale=IT">IT</a> |
+      <a href="?locale=ES">ES</a> |
+      <a href="?locale=NL">NL</a> |
+      <a href="?locale=PL">PL</a> |
+      <a href="?locale=SE">SE</a>
+    </div>
+  </header>
 
-    <main>
-        <table id="ssd-table">
-            <thead>
-                <tr>
-                    <th class="col-image">Image</th>
-                    <th class="col-title" data-sort="title">Title</th>
-                    <th data-sort="capacity_gb">Capacity</th>
-                    <th data-sort="price">Price</th>
-                    <th data-sort="price_per_tb">Price / TB</th>
-                </tr>
-            </thead>
-            <tbody id="ssd-table-body">
-                <!-- Data will be inserted here by JavaScript -->
-                <tr><td colspan="5">Loading prices...</td></tr>
-            </tbody>
-        </table>
-    </main>
-    
-    <footer>
-        <p>As an Amazon Associate I earn from qualifying purchases. Prices and availability are updated periodically and are subject to change.</p>
-    </footer>
+  <main>
+    <table id="ssd-table">
+      <thead>
+        <tr>
+          <th><img src="https://media.tenor.com/ArQJcOjE7yAAAAAC/sort-down.gif"  alt="Image" /></th>
+          <th class="sortable" data-key="title">Title ▼</th>
+          <th class="sortable" data-key="capacity">Capacity ▼</th>
+          <th class="sortable" data-key="price">Price ▼</th>
+          <th class="sortable" data-key="price_per_tb">Price / TB ▼</th>
+        </tr>
+      </thead>
+      <tbody id="ssd-body"></tbody>
+    </table>
+  </main>
 
-    <script src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
