@@ -1,7 +1,6 @@
 import os
 import json
-from python_amazon_paapi import AmazonAPI  # Correct import
-
+from python_amazon_paapi import AmazonAPI  # Official package import
 # --- Configuration Section ---
 AMAZON_ACCESS_KEY = os.environ.get("AMAZON_ACCESS_KEY")
 AMAZON_SECRET_KEY = os.environ.get("AMAZON_SECRET_KEY")
