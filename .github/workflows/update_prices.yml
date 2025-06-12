@@ -17,25 +17,26 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-          cache: 'pip'  # Caches dependencies for faster runs
+          # Removed cache to avoid requirements.txt error
 
-      - name: Install python-amazon-paapi (Official Package)
+      - name: Install python-amazon-paapi
         run: |
           python -m pip install --upgrade pip
-          pip install python-amazon-paapi --no-cache-dir  # Force fresh install
-          pip install requests  # Ensure dependency is present
-          pip show python-amazon-paapi  # Verify installation
+          pip install python-amazon-paapi requests
+          pip freeze | grep amazon  # Verify installation
+
+      - name: Debug Python environment
+        run: |
+          python -c "import sys; print(f'Python path: {sys.path}')"
+          python -c "import python_amazon_paapi; print(f'Successfully imported version {python_amazon_paapi.__version__}')"
 
       - name: Run price fetcher
         env:
           AMAZON_ACCESS_KEY: ${{ secrets.AMAZON_ACCESS_KEY }}
           AMAZON_SECRET_KEY: ${{ secrets.AMAZON_SECRET_KEY }}
-        run: |
-          python -c "import python_amazon_paapi; print(f'Successfully imported {python_amazon_paapi.__version__}')"
-          python fetcher.py
+        run: python fetcher.py
 
       - name: Commit changes
-        if: success()
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Automated: Updated SSD prices"
