@@ -2,26 +2,30 @@ name: Update SSD Prices
 
 on:
   schedule:
-    - cron: '0 */6 * * *'  # Every 6 hours
-  workflow_dispatch:       # Manual trigger
+    - cron: '0 */6 * * *'  # Run every 6 hours
+  workflow_dispatch:       # Allow manual trigger
 
 jobs:
   update-prices:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      - name: Install dependencies
+      - name: Install paapi5 SDK from GitHub
         run: |
-          pip install paapi5-python-sdk
+          pip install git+https://github.com/amzn/paapi5-python-sdk.git 
 
-      - name: Fetch SSD prices
+      - name: Install additional dependencies (if needed)
+        run: |
+          pip install requests
+
+      - name: Fetch SSD prices via Amazon PA-API
         env:
           AMAZON_ACCESS_KEY: ${{ secrets.AMAZON_ACCESS_KEY }}
           AMAZON_SECRET_KEY: ${{ secrets.AMAZON_SECRET_KEY }}
@@ -37,7 +41,19 @@ jobs:
         run: |
           python fetcher.py
 
+      - name: Check for changes in ssd_prices.json
+        id: changes
+        run: |
+          if git diff --exit-code ssd_prices.json; then
+            echo "No changes detected"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changes detected"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Commit and push changes
+        if: steps.changes.outputs.has_changes == 'true'
         run: |
           git config --local user.email "github-actions@example.com"
           git config --local user.name "GitHub Actions"
