@@ -29,10 +29,6 @@ jobs:
         run: |
           pip list | grep -i paapi
 
-      - name: Show Python path
-        run: |
-          python -c "import sys; print(sys.path)"
-
       - name: Fetch SSD prices via Amazon PA-API
         env:
           AMAZON_ACCESS_KEY: ${{ secrets.AMAZON_ACCESS_KEY }}
@@ -48,3 +44,23 @@ jobs:
           TAG_SE: strobify10-20
         run: |
           python fetcher.py
+
+      - name: Check for changes in ssd_prices.json
+        id: changes
+        run: |
+          if git diff --exit-code ssd_prices.json; then
+            echo "No changes detected"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changes detected"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push changes
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git config --local user.email "github-actions@example.com"
+          git config --local user.name "GitHub Actions"
+          git add ssd_prices.json
+          git commit -m "Update SSD prices [CI]"
+          git push origin main
