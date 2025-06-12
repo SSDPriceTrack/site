@@ -17,24 +17,28 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-          # Removed cache to avoid requirements.txt error
+          architecture: 'x64'  # Explicit architecture
 
-      - name: Install python-amazon-paapi
+      - name: Create and use virtual environment
         run: |
-          python -m pip install --upgrade pip
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
           pip install python-amazon-paapi requests
-          pip freeze | grep amazon  # Verify installation
+          pip list  # Verify installation
 
-      - name: Debug Python environment
+      - name: Verify package installation
         run: |
-          python -c "import sys; print(f'Python path: {sys.path}')"
-          python -c "import python_amazon_paapi; print(f'Successfully imported version {python_amazon_paapi.__version__}')"
+          source venv/bin/activate
+          python -c "import python_amazon_paapi; print(f'Package version: {python_amazon_paapi.__version__}')"
 
       - name: Run price fetcher
         env:
           AMAZON_ACCESS_KEY: ${{ secrets.AMAZON_ACCESS_KEY }}
           AMAZON_SECRET_KEY: ${{ secrets.AMAZON_SECRET_KEY }}
-        run: python fetcher.py
+        run: |
+          source venv/bin/activate
+          python fetcher.py
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
