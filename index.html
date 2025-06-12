@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSD Price Comparator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>SSD Price Comparator</h1>
+        <nav class="locale-nav">
+            <a href="/?locale=us">US</a> |
+            <a href="/?locale=uk">UK</a> |
+            <a href="/?locale=de">DE</a> |
+            <a href="/?locale=ca">CA</a> |
+            <a href="/?locale=fr">FR</a> |
+            <a href="/?locale=es">ES</a> |
+            <a href="/?locale=it">IT</a> |
+            <a href="/?locale=nl">NL</a> |
+            <a href="/?locale=pl">PL</a> |
+            <a href="/?locale=se">SE</a>
+        </nav>
+    </header>
+
+    <main>
+        <table id="ssd-table">
+            <thead>
+                <tr>
+                    <th class="col-image">Image</th>
+                    <th class="col-title" data-sort="title">Title</th>
+                    <th data-sort="capacity_gb">Capacity</th>
+                    <th data-sort="price">Price</th>
+                    <th data-sort="price_per_tb">Price / TB</th>
+                </tr>
+            </thead>
+            <tbody id="ssd-table-body">
+                <!-- Data will be inserted here by JavaScript -->
+                <tr><td colspan="5">Loading prices...</td></tr>
+            </tbody>
+        </table>
+    </main>
+    
+    <footer>
+        <p>As an Amazon Associate I earn from qualifying purchases. Prices and availability are updated periodically and are subject to change.</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
