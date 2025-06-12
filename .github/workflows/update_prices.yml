@@ -1,23 +1,48 @@
-name: Test PA-API Install
+name: Update SSD Prices
 
-on: [workflow_dispatch]
+on:
+  schedule:
+    - cron: '0 */6 * * *' # Runs every 6 hours
+  workflow_dispatch: # Allows manual trigger
 
 jobs:
-  test:
+  update-prices:
     runs-on: ubuntu-latest
+    name: Update SSD Prices from Amazon PA-API
+
     steps:
-      - name: Set up Python
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
+          architecture: 'x64'
 
-      - name: Create venv and install package
+      - name: Create venv + install dependencies
         run: |
           python -m venv venv
           source venv/bin/activate
-          pip install python-amazon-paapi
+          pip install --upgrade pip
+          pip install python-amazon-paapi requests
 
-      - name: Verify import
+      - name: Verify package installation
         run: |
           source venv/bin/activate
-          python -c "import python_amazon_paapi; print(python_amazon_paapi.__version__)"
+          python -c "import python_amazon_paapi; print(f'Version: {python_amazon_paapi.__version__}')"
+
+      - name: Run price fetcher script
+        env:
+          AMAZON_ACCESS_KEY: ${{ secrets.AMAZON_ACCESS_KEY }}
+          AMAZON_SECRET_KEY: ${{ secrets.AMAZON_SECRET_KEY }}
+          AMAZON_ASSOCIATE_TAG: ${{ secrets.AMAZON_ASSOCIATE_TAG }}
+        run: |
+          source venv/bin/activate
+          python fetcher.py
+
+      - name: Commit updated prices JSON
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Automated: Updated SSD prices"
+          file_pattern: ssd_prices.json
