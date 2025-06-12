@@ -2,43 +2,40 @@ name: Update SSD Prices
 
 on:
   schedule:
-    - cron: '0 */6 * * *'  # Runs every 6 hours
-  workflow_dispatch:  # Enables manual triggering via GitHub UI
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
 
 jobs:
   update-prices:
     runs-on: ubuntu-latest
-
+    
     steps:
-      # Step 1: Checkout repository
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Set up Python
       - name: Set up Python 3.10
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
+          cache: 'pip'  # Caches dependencies for faster runs
 
-      # Step 3: Install dependencies (with explicit version)
-      - name: Install python-amazon-paapi
+      - name: Install python-amazon-paapi (Official Package)
         run: |
           python -m pip install --upgrade pip
-          pip install python-amazon-paapi==5.0.0 requests
+          pip install python-amazon-paapi --no-cache-dir  # Force fresh install
+          pip install requests  # Ensure dependency is present
+          pip show python-amazon-paapi  # Verify installation
 
-      # Step 4: Debug - Verify installed packages
-      - name: Check installed packages
-        run: pip list
-
-      # Step 5: Run the fetcher script
-      - name: Fetch SSD prices
+      - name: Run price fetcher
         env:
           AMAZON_ACCESS_KEY: ${{ secrets.AMAZON_ACCESS_KEY }}
           AMAZON_SECRET_KEY: ${{ secrets.AMAZON_SECRET_KEY }}
-        run: python fetcher.py
+        run: |
+          python -c "import python_amazon_paapi; print(f'Successfully imported {python_amazon_paapi.__version__}')"
+          python fetcher.py
 
-      # Step 6: Commit changes if prices updated
-      - name: Commit and push
+      - name: Commit changes
+        if: success()
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Automated: Updated SSD prices"
