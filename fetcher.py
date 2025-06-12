@@ -1,11 +1,13 @@
 import os
 import json
-from paapi5_python_sdk.api_helper import ApiHelper
-from paapi5_python_sdk.configuration import Configuration
-from paapi5_python_sdk.api.default_api import DefaultApi
-from paapi5_python_sdk.search_items_resource import SearchItemsResource
-from paapi5_python_sdk.search_items_request import SearchItemsRequest
-from paapi5_python_sdk.sort_by import SortBy
+
+# ✅ Correct imports for Telefonica's SDK
+from paapi5sdk.api_helper import ApiHelper
+from paapi5sdk.configuration import Configuration
+from paapi5sdk.api.default_api import DefaultApi
+from paapi5sdk.search_items_request import SearchItemsRequest
+from paapi5sdk.search_items_resource import SearchItemsResource
+from paapi5sdk.sort_by import SortBy
 
 # Amazon API credentials from environment variables
 AWS_ACCESS_KEY = os.getenv("AMAZON_ACCESS_KEY")
@@ -14,7 +16,7 @@ AWS_SECRET_KEY = os.getenv("AMAZON_SECRET_KEY")
 # Affiliate tag for all locales
 PARTNER_TAG = "strobify10-20"
 
-# Supported locales with domain, region, search index, and category
+# Supported locales with domain, region, search index
 LOCALE_CONFIGS = {
     "US": {"host": "webservices.amazon.com", "region": "US", "search_index": "InternalHardDrives"},
     "CA": {"host": "webservices.amazon.ca", "region": "CA", "search_index": "InternalHardDrives"},
@@ -36,7 +38,7 @@ products = []
 
 def fetch_ssd_data(locale):
     config = LOCALE_CONFIGS[locale]
-    
+
     configuration = Configuration(
         access_key=AWS_ACCESS_KEY,
         secret_key=AWS_SECRET_KEY,
@@ -46,24 +48,25 @@ def fetch_ssd_data(locale):
 
     api = DefaultApi(ApiHelper(configuration))
 
-    # Set up request
-    search_items_request = SearchItemsRequest(
-        partner_tag=PARTNER_TAG,
-        partner_type="Associates",
-        keywords=SEARCH_KEYWORDS,
-        search_index=config["search_index"],
-        item_count=10,
-        sort_by=SortBy.BEST_SELLER,  # Sort by Most Popular / Best Seller
-        resources=[
-            SearchItemsResource.ITEMINFO_TITLE,
-            SearchItemsResource.OFFERS_LISTINGS_PRICE,
-            SearchItemsResource.IMAGES_PRIMARY_LARGE,
-            SearchItemsResource.OFFERS_LISTINGS_URL,
-        ]
-    )
-
     try:
+        # Create request
+        search_items_request = SearchItemsRequest(
+            partner_tag=PARTNER_TAG,
+            partner_type="Associates",
+            keywords=SEARCH_KEYWORDS,
+            search_index=config["search_index"],
+            item_count=10,
+            sort_by=SortBy.BEST_SELLER,
+            resources=[
+                SearchItemsResource.ITEMINFO_TITLE,
+                SearchItemsResource.OFFERS_LISTINGS_PRICE,
+                SearchItemsResource.IMAGES_PRIMARY_LARGE,
+                SearchItemsResource.OFFERS_LISTINGS_URL,
+            ],
+        )
+
         response = api.search_items(search_items_request)
+
         if response.search_result:
             for item in response.search_result.items:
                 title = item.item_info.title.display_value if item.item_info.title else "N/A"
@@ -106,7 +109,6 @@ def fetch_ssd_data(locale):
                 })
     except Exception as e:
         print(f"Error fetching data for {locale}: {e}")
-
 
 def main():
     for locale in LOCALE_CONFIGS.keys():
