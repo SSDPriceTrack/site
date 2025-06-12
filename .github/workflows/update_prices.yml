@@ -17,17 +17,25 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Set git credentials
+      - name: Install dependencies
         run: |
-          git config --global url."https://x-access-token:${{  secrets.GITHUB_TOKEN }}@github.com".insteadOf "https://github.com" 
+          pip install requests
 
-      - name: Install paapi5 SDK from GitHub
+      - name: Clone paapi5sdk repo
         run: |
-          pip install git+https://github.com/Telefonica/amazon-paapi5-sdk.git 
+          git clone https://github.com/Telefonica/amazon-paapi5-sdk.git 
+
+      - name: Install SDK from local folder
+        run: |
+          cd amazon-paapi5-sdk && pip install -e .
 
       - name: Verify installation
         run: |
           pip list | grep -i paapi
+
+      - name: Print Python path
+        run: |
+          python -c "import sys; print(sys.path)"
 
       - name: Fetch SSD prices via Amazon PA-API
         env:
