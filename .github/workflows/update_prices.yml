@@ -17,7 +17,6 @@ jobs:
         with:
           python-version: '3.10'
 
-      # This is the step that was broken. We are fixing it now.
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
